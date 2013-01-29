@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.json.JSONException;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import de.geeksfactory.opacclient.NotReachableException;
 import de.geeksfactory.opacclient.objects.Account;
@@ -214,40 +215,91 @@ public interface OpacApi {
 
 	/**
 	 * Perform a reservation on the item last fetched with
-	 * <code>getResultById</code> or <code>@getResult</code> for Account
-	 * <code>acc</code> and the branch <code>zst</code> (if applicable)
-	 * 
-	 * WARNING: This API is about to change. If you are serious using it for an
-	 * implementation, please contact me!
+	 * <code>getResultById</code> or <code>getResult</code> for Account
+	 * <code>acc</code>. (if applicable)
 	 * 
 	 * This function is always called from a background thread, you can use
 	 * blocking network operations in it.
 	 * 
 	 * @param account
 	 *            Account to be used
-	 * @param branch
-	 *            Branch identifier
-	 * @return ReservationResult.OK on success, ReservationResult.ERROR on error
+	 * @param selection
+	 *            When the method is called first, this parameter will be null.
+	 *            If you return <code>SELECTION</code> in your
+	 *            {@link ReservationResult#setStatus(Status)}, this method will
+	 *            be called again with the user's selection.
+	 * @return A <code>ReservationResult</code> object which has to have the
+	 *         status set.
 	 */
-	public ReservationResult reservation(String branch, Account account)
+	public ReservationResult reservation(Account account, String selection)
 			throws IOException;
 
 	/**
-	 * The result of a {@link OpacApi#reservation(String, Account)} call
+	 * The result of a {@link OpacApi#reservation(Account, String)} call
 	 */
-	public enum ReservationResult {
+	public class ReservationResult {
+		public enum Status {
+			/**
+			 * Everything went well
+			 */
+			OK,
+			/**
+			 * An error occured
+			 */
+			ERROR,
+			/**
+			 * The user has to make a selection
+			 */
+			SELECTION
+		};
+
+		private Status status;
+		private ContentValues selection;
+
 		/**
-		 * Everything went well
+		 * Get the return status of the reservation() operation. Can be
+		 * <code>OK</code>, <code>ERROR</code> or <code>SELECTION</code> if the
+		 * user should select one of the options presented in
+		 * {@link #getSelection()}.
 		 */
-		OK,
+		public Status getStatus() {
+			return status;
+		}
+
 		/**
-		 * An error occured
+		 * Set the return status of the reservation() operation.
+		 * 
+		 * @param status
+		 *            The return status
+		 * @see #getStatus()
 		 */
-		ERROR,
+		public void setStatus(Status status) {
+			this.status = status;
+		}
+
 		/**
-		 * (Reserved, currently not in use.)
+		 * Get values the user should select one of if {@link #getStatus()} is
+		 * <code>SELECTION</code>.
+		 * 
+		 * @return ContentValue tuples with key to give back and value to show
+		 *         to the users.
 		 */
-		SELECTBRANCH
+		public ContentValues getSelection() {
+			return selection;
+		}
+
+		/**
+		 * Set values the user should select one of if
+		 * {@link #setStatus(Status)} is set to <code>SELECTION</code>.
+		 * 
+		 * @param selection
+		 *            Store with key-value-tuples where the key is what is to be
+		 *            returned back to reservation() and the value is what is to
+		 *            be displayed to the user.
+		 */
+		public void setSelection(ContentValues selection) {
+			this.selection = selection;
+		}
 	}
 
 	/**
