@@ -226,7 +226,7 @@ public interface OpacApi {
 	 * @param selection
 	 *            When the method is called first, this parameter will be null.
 	 *            If you return <code>SELECTION</code> in your
-	 *            {@link ReservationResult#setStatus(Status)}, this method will
+	 *            {@link ReservationResult#getStatus(Status)}, this method will
 	 *            be called again with the user's selection.
 	 * @return A <code>ReservationResult</code> object which has to have the
 	 *         status set.
@@ -295,7 +295,7 @@ public interface OpacApi {
 
 		/**
 		 * Set values the user should select one of if
-		 * {@link #setStatus(Status)} is set to <code>SELECTION</code>.
+		 * {@link #getStatus(Status)} is set to <code>SELECTION</code>.
 		 * 
 		 * @param selection
 		 *            Store with key-value-tuples where the key is what is to be
