@@ -244,6 +244,10 @@ public interface OpacApi {
 			 */
 			OK,
 			/**
+			 * This is not supported in this API implementation
+			 */
+			UNSUPPORTED,
+			/**
 			 * An error occured
 			 */
 			ERROR,
@@ -257,6 +261,18 @@ public interface OpacApi {
 		private ContentValues selection;
 
 		/**
+		 * Create a new ReservationResult object holding the return status of
+		 * the reservation() operation.
+		 * 
+		 * @param status
+		 *            The return status
+		 * @see #getStatus()
+		 */
+		public ReservationResult(Status status) {
+			this.status = status;
+		}
+
+		/**
 		 * Get the return status of the reservation() operation. Can be
 		 * <code>OK</code>, <code>ERROR</code> or <code>SELECTION</code> if the
 		 * user should select one of the options presented in
@@ -264,17 +280,6 @@ public interface OpacApi {
 		 */
 		public Status getStatus() {
 			return status;
-		}
-
-		/**
-		 * Set the return status of the reservation() operation.
-		 * 
-		 * @param status
-		 *            The return status
-		 * @see #getStatus()
-		 */
-		public void setStatus(Status status) {
-			this.status = status;
 		}
 
 		/**
